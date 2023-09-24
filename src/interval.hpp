@@ -1,8 +1,6 @@
 #ifndef INTERVAL_H
 #define INTERVAL_H
 
-#include "rtweekend.hpp"
-
 class interval {
   public:
     double min, max;

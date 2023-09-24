@@ -2,8 +2,7 @@
 #define HITTABLE_LIST_H
 
 #include "hittable.hpp"
-#include "rtweekend.hpp"
-#include "interval.hpp"
+
 
 #include <memory>
 #include <vector>

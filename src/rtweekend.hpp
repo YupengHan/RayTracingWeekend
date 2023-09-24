@@ -6,10 +6,6 @@
 #include <memory>
 #include <cstdlib>
 
-// #include "interval.hpp"
-#include "ray.hpp"
-#include "vec3.hpp"
-
 using std::shared_ptr;
 using std::make_shared;
 using std::sqrt;
