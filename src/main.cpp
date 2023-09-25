@@ -8,8 +8,6 @@
 
 #include <iostream>
 
-
-
 int main () {
   // World
 
@@ -61,4 +59,5 @@ int main () {
   cam.vup      = vec3(0,1,0);
 
   cam.render(world);
+  
 }
