@@ -1,5 +1,5 @@
-#ifndef VEC #_HPP
-#define VEC #_HPP
+#ifndef VEC_HPP
+#define VEC_HPP
 
 #include <cmath>
 #include <iostream>
@@ -83,14 +83,40 @@ inline vec3<Tag> operator*(const vec3<Tag> &u, const vec3<Tag> &v)
 }
 
 template <typename Tag>
-inline vec3<Tag> operator*(double t, const vec3<Tag> &v)
+inline vec3<Tag> operator*(float t, const vec3<Tag> &v)
 {
   return vec3<Tag>(t * v.e[0], t * v.e[1], t * v.e[2]);
 }
 
 template <typename Tag>
-inline vec3<Tag> operator*(const vec3<Tag> &v, double t)
+inline vec3<Tag> operator*(const vec3<Tag> &v, float t)
 {
   return t * v;
+}
+
+template <typename Tag>
+inline vec3<Tag> operator/(vec3<Tag> v, float t)
+{
+  return (1 / t) * v;
+}
+
+template <typename Tag>
+inline float dot(const vec3<Tag> &u, const vec3<Tag> &v)
+{
+  return u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2];
+}
+
+template <typename Tag>
+inline vec3<Tag> cross(const vec3<Tag> &u, const vec3<Tag> &v)
+{
+  return vec3<Tag>(u.e[1] * v.e[2] - u.e[2] * v.e[1],
+                   u.e[2] * v.e[0] - u.e[0] * v.e[2],
+                   u.e[0] * v.e[1] - u.e[1] * v.e[0]);
+}
+
+template <typename Tag>
+inline vec3<Tag> unit_vector(vec3<Tag> v)
+{
+  return v / v.length();
 }
 #endif
