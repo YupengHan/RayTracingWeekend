@@ -4,7 +4,7 @@
 #include "ray.hpp"
 #include "vec3.hpp"
 
-bool hit_sphere(const point3 &center, float radius, const ray &r) {
+float hit_sphere(const point3 &center, float radius, const ray &r) {
   /*
   x^2 + y^2 + z^2 = R^2
   Sphere Center move to (Sx, Sy, Sz)
@@ -25,15 +25,24 @@ bool hit_sphere(const point3 &center, float radius, const ray &r) {
   auto b = 2.0 * dot(oc, r.direction());
   auto c = dot(oc, oc) - radius * radius;
   auto discriminant = b * b - 4 * a * c;
-  return (discriminant > 0);
+  // return (discriminant > 0);
+  if (discriminant < 0) {
+    return -1.0;
+  } else {
+    return (-b - sqrt(discriminant)) / (2.0 * a);
+  }
 }
 
 color3 ray_color(const ray &r) {
-  if (hit_sphere(point3(0, 0, -1), 0.5, r)) return color3(1, 0, 0);
-  // return color3(0, 0, 0);
-  point3 unit_direction = unit_vector(r.direction());
-  auto t = 0.5 * (unit_direction.y() + 1.0);
-  return (1.0 - t) * color3(1.0, 1.0, 1.0) + t * color3(0.5, 0.7, 1.0);
+  auto t = hit_sphere(point3(0, 0, -1), 0.5, r);
+  if (t > 0.0) {
+    point3 N = unit_vector(r.at(t) - point3(0, 0, -1));
+    return 0.5 * color3(N.x() + 1, N.y() + 1, N.z() + 1);
+  } else {
+    point3 unit_direction = unit_vector(r.direction());
+    auto a = 0.5 * (unit_direction.y() + 1.0);
+    return (1.0 - a) * color3(1.0, 1.0, 1.0) + a * color3(0.5, 0.7, 1.0);
+  }
 }
 
 int main() {
