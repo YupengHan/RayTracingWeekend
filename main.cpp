@@ -1,48 +1,17 @@
-#include <iostream>
+#include "hittable.hpp"
+#include "hittable_list.hpp"
+#include "sphere.hpp"
 
-#include "color.hpp"
-#include "ray.hpp"
-#include "vec3.hpp"
-
-float hit_sphere(const point3 &center, float radius, const ray &r) {
-  /*
-  x^2 + y^2 + z^2 = R^2
-  Sphere Center move to (Sx, Sy, Sz)
-  (Sx - x)^2 + (Sy - y)^2 + (Sz - z)^2 = R^2
-  Vector from P(x,y,z) to S(Sx, Sy, Sz) (P-S)
-  (S-P)^2 = R^2
-  P is a function of t based on the ray
-  (S - P(t))^2 = R^2
-  P(t) = C(center) + tD(direction)
-  (S - (C + tD))^2 = R^2
-  (td + C - S)^2 = R^2
-  tD^2 + 2tD(C-S) + (C-S)^2 - R^2 = 0
-  A = d^2, B = 2D(C-S), C = (C-S)^2 - R^2
-  B^2 - 4AC > 0 -> hit
-  */
-  point3 oc = r.origin() - center;
-  auto a = dot(r.direction(), r.direction());
-  auto b = 2.0 * dot(oc, r.direction());
-  auto c = dot(oc, oc) - radius * radius;
-  auto discriminant = b * b - 4 * a * c;
-  // return (discriminant > 0);
-  if (discriminant < 0) {
-    return -1.0;
-  } else {
-    return (-b - sqrt(discriminant)) / (2.0 * a);
+color3 ray_color(const ray &r, const hittable &world) {
+  hittable::hit_record rec;
+  if (world.hit(r, 0, infinity, rec)) {
+    color3 rec_normal_color =
+        color3(rec.normal.x(), rec.normal.y(), rec.normal.z());
+    return 0.5 * (rec_normal_color + color3(1, 1, 1));
   }
-}
-
-color3 ray_color(const ray &r) {
-  auto t = hit_sphere(point3(0, 0, -1), 0.5, r);
-  if (t > 0.0) {
-    point3 N = unit_vector(r.at(t) - point3(0, 0, -1));
-    return 0.5 * color3(N.x() + 1, N.y() + 1, N.z() + 1);
-  } else {
-    point3 unit_direction = unit_vector(r.direction());
-    auto a = 0.5 * (unit_direction.y() + 1.0);
-    return (1.0 - a) * color3(1.0, 1.0, 1.0) + a * color3(0.5, 0.7, 1.0);
-  }
+  point3 unit_direction = unit_vector(r.direction());
+  auto a = 0.5 * (unit_direction.y() + 1.0);
+  return (1.0 - a) * color3(1.0, 1.0, 1.0) + a * color3(0.5, 0.7, 1.0);
 }
 
 int main() {
@@ -51,6 +20,11 @@ int main() {
 
   int img_h = static_cast<int>(img_w / aspect_ratio);
   img_h = (img_h < 1) ? 1 : img_h;
+
+  // World
+  hittable_list world;
+  world.add(make_shared<sphere>(point3(0, 0, -1), 0.5));
+  world.add(make_shared<sphere>(point3(0, -100.5, -1), 100));
 
   // camera position
 
@@ -80,7 +54,7 @@ int main() {
       auto ray_dir = pixel_center - camera_center;
       ray r(camera_center, ray_dir);
 
-      color3 pixel_color = ray_color(r);
+      color3 pixel_color = ray_color(r, world);
       write_color(std::cout, pixel_color);
     }
   }
